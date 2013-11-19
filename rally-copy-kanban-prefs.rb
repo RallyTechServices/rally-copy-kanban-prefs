@@ -167,7 +167,6 @@ def copy_prefs(header, row)
   app_oid                         = clean_input(row[header[0]])
   source_project_oid              = clean_input(row[header[1]])
   target_project_oid              = clean_input(row[header[2]])
-  kanban_fieldname                = clean_input(row[header[3]])
 
   source_prefs_hash = get_prefs_hash(source_project_oid, app_oid)
   copy_prefs_to_target(target_project_oid, app_oid, source_prefs_hash)
