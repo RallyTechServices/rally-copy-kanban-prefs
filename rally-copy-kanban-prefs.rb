@@ -27,8 +27,8 @@ if $my_delim == nil then $my_delim = "," end
 def make_prefs_query_url(project_oid, app_oid)
 
   query_str = "query=((AppId = #{app_oid}) AND (Project = \"/project/#{project_oid}\"))&fetch=ObjectID,AppId,Name,Value,CreationDate,Project,User,Workspace&project=/project/#{project_oid}"
-  prefs_query_params = "start=1&pagesize=200"
-  prefs_query_url = "#{$my_base_url}/webservice/#{$wsapi_version}/Preference?#{prefs_query_params}&#{query_str}"
+  prefs_query_params  = "start=1&pagesize=200"
+  prefs_query_url     = "#{$my_base_url}/webservice/#{$wsapi_version}/Preference?#{prefs_query_params}&#{query_str}"
   prefs_query_encoded = URI::encode(prefs_query_url)
   return prefs_query_encoded
 
@@ -73,10 +73,10 @@ def copy_prefs_to_target(target_project_oid, app_oid, source_prefs_hash)
 
       pref_create_fields = {
         "Preference" => {
-          "Name" => this_pref_name,
-          "Value" => this_pref_info["Value"],
-          "Project" => "/project/#{target_project_oid}",
-          "AppID" => app_oid
+          "Name"     => this_pref_name,
+          "Value"    => this_pref_info["Value"],
+          "Project"  => "/project/#{target_project_oid}",
+          "AppID"    => app_oid
         }
       }
 
@@ -90,7 +90,12 @@ def copy_prefs_to_target(target_project_oid, app_oid, source_prefs_hash)
       response = @rally_json_connection.send_request(prefs_update_url, args)
       errors = get_errors(response)
 
-      @logger.info response
+      if !errors.nil? then
+        @logger.error errors
+      else
+        @logger.info "Target Kanban policy #{this_pref_name} created: #{update_pref_value}"
+      end
+
     else # Policy Pref DOES exist, update it
 
       update_pref_value = this_pref_info["Value"]
@@ -168,7 +173,7 @@ def copy_prefs(header, row)
   source_project_oid              = clean_input(row[header[1]])
   target_project_oid              = clean_input(row[header[2]])
 
-  source_prefs_hash = get_prefs_hash(source_project_oid, app_oid)
+  source_prefs_hash               = get_prefs_hash(source_project_oid, app_oid)
   copy_prefs_to_target(target_project_oid, app_oid, source_prefs_hash)
 
 end
@@ -210,6 +215,6 @@ begin
   (1...input.size).each { |i| rows << CSV::Row.new(header, input[i]) }
 
   rows.each do | row |
-    copy_prefs(header, row)
+    #copy_prefs(header, row)
   end
 end
