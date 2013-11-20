@@ -90,7 +90,7 @@ def copy_prefs_to_target(target_project_oid, app_oid, source_prefs_hash)
       response = @rally_json_connection.send_request(prefs_update_url, args)
       errors = get_errors(response)
 
-      if !errors.nil? then
+      if errors.length > 0 then
         @logger.error errors
       else
         @logger.info "Target Kanban policy #{this_pref_name} created: #{update_pref_value}"
@@ -120,7 +120,7 @@ def copy_prefs_to_target(target_project_oid, app_oid, source_prefs_hash)
         # payload object to JSON: {""Preference"":{""Value"":""Custom State Exit Policy""}}
         response = @rally_json_connection.send_request(prefs_update_url, args)
         errors = get_errors(response)
-        if !errors.nil? then
+        if errors.length > 0 then
           @logger.error errors
         else
           @logger.info "Target Kanban policy #{this_pref_name} updated: #{update_pref_value}"
@@ -215,6 +215,6 @@ begin
   (1...input.size).each { |i| rows << CSV::Row.new(header, input[i]) }
 
   rows.each do | row |
-    #copy_prefs(header, row)
+    copy_prefs(header, row)
   end
 end
